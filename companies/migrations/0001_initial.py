@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('street', models.CharField(max_length=64, verbose_name='Улица')),
                 ('house', models.PositiveSmallIntegerField(verbose_name='Дом')),
                 ('created', models.DateField(auto_now_add=True, verbose_name='Дата создания')),
-                ('debt', models.FloatField()),
+                ('debt', models.FloatField(verbose_name='Задолженность перед поставщиком')),
                 ('supplier', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='companies.company', verbose_name='Поставщик')),
             ],
             options={

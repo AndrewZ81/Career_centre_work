@@ -32,4 +32,4 @@ class Company(models.Model):
     created = models.DateField(verbose_name='Дата создания', auto_now_add=True)
     supplier = models.ForeignKey(
         'self', verbose_name='Поставщик', null=True, blank=True, on_delete=models.PROTECT)
-    debt = models.FloatField()
+    debt = models.FloatField(verbose_name='Задолженность перед поставщиком')
