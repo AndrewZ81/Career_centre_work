@@ -15,8 +15,27 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+
+from trade_net import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),  # Маршрут панели администратора
+
+    # Маршруты приложений
+    path('companies/', include(('companies.urls', 'companies'))),  # 'companies'
+
+    # Маршруты для схем OpenAPI 3 приложения 'companies'
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+
 ]
+
+# Создаём маршруты для облегчения тестирования
+if settings.DEBUG:
+    urlpatterns += [
+        path('api-auth/', include('rest_framework.urls')),
+    ]
+
