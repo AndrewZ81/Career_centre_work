@@ -8,9 +8,7 @@ from .models import Company
 
 
 class CompanyCreateView(generics.CreateAPIView):
-    """
-    Обрабатывает запрос на создание участника торговой сети.
-    """
+    """Обрабатывает запрос на создание участника торговой сети."""
     permission_classes: list = [permissions.IsAuthenticated]
     serializer_class: Serializer = CompanyCreateSerializer
 

@@ -4,10 +4,7 @@ from .models import Company
 
 
 class CompanyCreateSerializer(serializers.ModelSerializer):
-    """
-    Создаёт участника торговой сети.
-    """
-
+    """Создаёт участника торговой сети."""
     class Meta:
         model = Company
         read_only_fields = ('id', 'created')
@@ -22,7 +19,6 @@ class CompanySerializer(serializers.ModelSerializer):
     - редактирует содержимое.
     - удаляет.
     """
-
     class Meta:
         model = Company
         read_only_fields = ('id', 'created', 'debt')
