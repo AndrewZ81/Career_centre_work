@@ -3,7 +3,7 @@ from rest_framework.serializers import Serializer
 from django_filters.rest_framework import DjangoFilterBackend
 
 
-from .serializers import CompanySerializer
+from .serializers import CompanySerializer, CompanyCreateSerializer
 from .models import Company
 
 
@@ -12,7 +12,7 @@ class CompanyCreateView(generics.CreateAPIView):
     Обрабатывает запрос на создание участника торговой сети.
     """
     permission_classes: list = [permissions.IsAuthenticated]
-    serializer_class: Serializer = CompanySerializer
+    serializer_class: Serializer = CompanyCreateSerializer
 
 
 class CompanyListView(generics.ListAPIView):
@@ -25,193 +25,19 @@ class CompanyListView(generics.ListAPIView):
     serializer_class: Serializer = CompanySerializer
 
     filter_backends: list = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
-    filterset_fields: list = ["town"]
-    search_fields: list = ["title"]
-    ordering_fields: list = ["title"]
-    ordering: str = "title"
+    filterset_fields: list = ['town']
+    search_fields: list = ['title']
+    ordering_fields: list = ['title']
+    ordering: str = 'title'
 
-# class BoardView(generics.RetrieveUpdateDestroyAPIView):
-#     """
-#     Для запрашиваемой общей доски целей текущего пользователя:
-#     - выводит подробную информацию.
-#     - редактирует содержимое.
-#     - делает неактивной (скрывает).
-#     """
-#     serializer_class: Serializer = BoardSerializer
-#     permission_classes: list = [BoardPermissions]
-#
-#     def get_queryset(self):
-#         return Board.objects.filter(is_deleted=False)
-#
-#     def perform_destroy(self, instance: Board):
-#         """
-#         Помечет удаленной общую доску целей и связанные с ней категории.
-#         Помечает архивными связанные с ней цели.
-#         """
-#         with transaction.atomic():
-#             instance.is_deleted = True
-#             instance.save()
-#             instance.categories.update(is_deleted=True)
-#             Goal.objects.filter(category__board=instance).update(status=Status.archived)
-#
-#
-# class GoalCategoryCreateView(generics.CreateAPIView):
-#     """
-#     Обрабатывает запрос на создание категории текущему пользователю.
-#     """
-#     permission_classes: list = [GoalCategoryPermissions]
-#     serializer_class: Serializer = GoalCategoryCreateSerializer
-#
-#
-# class GoalCategoryListView(generics.ListAPIView):
-#     """
-#     Обрабатывает запрос на отображение списка категорий текущего пользователя
-#     Поддерживает сортировку по названию и дате создания, поиск по названию и
-#     фильтрацию по названию общей доски целей
-#     """
-#     permission_classes: list = [GoalCategoryPermissions]
-#     serializer_class: Serializer = GoalCategorySerializer
-#
-#     filter_backends: list = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
-#     ordering_fields: list = ["title", "created"]
-#     ordering: str = "title"
-#     search_fields: list = ["title"]
-#     filterset_fields: list = ["board"]
-#
-#     def get_queryset(self):
-#         """
-#         Исключает:
-#         - удалённые категории.
-#         - категории, в досках которых текущий пользователь не является участником.
-#         """
-#         return GoalCategory.objects.filter(
-#             board__participants__user=self.request.user, is_deleted=False
-#         )
-#
-#
-# class GoalCategoryView(generics.RetrieveUpdateDestroyAPIView):
-#     """
-#     Для запрашиваемой категории текущего пользователя:
-#     - выводит подробную информацию
-#     - редактирует содержимое
-#     - делает неактивной (скрывает)
-#     """
-#     serializer_class: Serializer = GoalCategorySerializer
-#     permission_classes: list = [GoalCategoryPermissions]
-#
-#     def get_queryset(self):
-#         return GoalCategory.objects.filter(
-#             board__participants__user=self.request.user, is_deleted=False
-#         )
-#
-#     def perform_destroy(self, instance: GoalCategory):
-#         """
-#         Помечет категорию удалённой.
-#         Помечает архивными связанные с ней цели.
-#         """
-#         with transaction.atomic():
-#             instance.is_deleted = True
-#             instance.save(update_fields=('is_deleted',))
-#             instance.goals.update(status=Status.archived)
-#
-#
-# class GoalCreateView(generics.CreateAPIView):
-#     """
-#     Обрабатывает запрос на создание цели текущему пользователю
-#     """
-#     permission_classes: list = [GoalPermissions]
-#     serializer_class: Serializer = GoalCreateSerializer
-#
-#
-# class GoalListView(generics.ListAPIView):
-#     """
-#     Обрабатывает запрос на отображение списка целей текущего пользователя
-#     Поддерживает сортировку по названию и дате создания, поиск по названию и описанию,
-#     фильтрацию по категории, статусу, приоритету и дате
-#     """
-#     permission_classes: list = [GoalPermissions]
-#     serializer_class: Serializer = GoalSerializer
-#
-#     filter_backends: list = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
-#     filterset_class: FilterSet = GoalDateFilter
-#     ordering_fields: list = ["title", "created"]
-#     ordering: str = "title"
-#     search_fields: list = ["title", "description"]
-#
-#     def get_queryset(self):
-#         """
-#         Исключает:
-#         - удалённые категории.
-#         - цели категорий, в досках которых текущий пользователь не является участником.
-#         - архивные цели
-#         """
-#         return Goal.objects.filter(
-#             category__board__participants__user=self.request.user,
-#             category__is_deleted=False
-#         ).exclude(status=Status.archived)
-#
-#
-# class GoalView(generics.RetrieveUpdateDestroyAPIView):
-#     """
-#     Для запрашиваемой цели текущего пользователя:
-#     - выводит подробную информацию
-#     - редактирует содержимое
-#     - архивирует (скрывает)
-#     """
-#     serializer_class: Serializer = GoalSerializer
-#     permission_classes: list = [GoalPermissions]
-#
-#     def get_queryset(self):
-#         return Goal.objects.filter(
-#             category__board__participants__user=self.request.user,
-#             category__is_deleted=False
-#         ).exclude(status=Status.archived)
-#
-#     def perform_destroy(self, instance: Goal):
-#         instance.status = Status.archived
-#         instance.save(update_fields=('status',))
-#
-#
-# class GoalCommentCreateView(generics.CreateAPIView):
-#     """
-#     Обрабатывает запрос на создание комментария текущей цели
-#     """
-#     permission_classes: list = [GoalCommentPermissions]
-#     serializer_class: Serializer = GoalCommentCreateSerializer
-#
-#
-# class GoalCommentListView(generics.ListAPIView):
-#     """
-#     Обрабатывает запрос на отображение списка комментариев текущего пользователя
-#     Поддерживает сортировку по дате создания и фильтрацию по названию цели
-#     """
-#     permission_classes: list = [GoalCommentPermissions]
-#     serializer_class: Serializer = GoalCommentSerializer
-#
-#     filter_backends: list = [filters.OrderingFilter, DjangoFilterBackend]
-#     ordering_fields: list = ["created"]
-#     ordering: str = "-created"
-#     filterset_fields: list = ["goal"]
-#
-#     def get_queryset(self):
-#         """
-#         Исключает комментарии целей категорий,
-#         в досках которых текущий пользователь не является участником.
-#         """
-#         return GoalComment.objects.filter(
-#             goal__category__board__participants__user=self.request.user
-#         )
-#
-#
-# class GoalCommentView(generics.RetrieveUpdateDestroyAPIView):
-#     """
-#     Для запрашиваемого комментария текущего пользователя:
-#     - выводит подробную информацию
-#     - редактирует содержимое
-#     - удаляет
-#     """
-#     serializer_class: Serializer = GoalCommentSerializer
-#     permission_classes: list = [GoalCommentPermissions]
-#
-#     def get_queryset(self):
-#         return GoalComment.objects.filter(goal__user=self.request.user)
+
+class CompanyView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Для запрашиваемого участника торговой сети:
+    - выводит подробную информацию.
+    - редактирует содержимое.
+    - удаляет.
+    """
+    queryset = Company.objects.all()
+    serializer_class: Serializer = CompanySerializer
+    permission_classes: list = [permissions.IsAuthenticated]
