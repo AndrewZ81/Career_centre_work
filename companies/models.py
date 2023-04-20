@@ -33,3 +33,22 @@ class Company(models.Model):
     supplier = models.ForeignKey(
         'self', verbose_name='Поставщик', null=True, blank=True, on_delete=models.PROTECT)
     debt = models.FloatField(verbose_name='Задолженность перед поставщиком')
+
+
+class Product(models.Model):
+    """Модель продукта в торговой сети"""
+
+    class Meta:
+        verbose_name = 'Продукт торговой сети'
+        verbose_name_plural = 'Продукты торговой сети'
+
+    def __str__(self):
+        return self.title
+
+    title = models.CharField(verbose_name='Название', max_length=255)
+    model = models.CharField(verbose_name='Модель', max_length=255)
+    release_date = models.DateField(verbose_name='Дата выхода продукта на рынок')
+
+    # У участника торговой сети может быть множество продуктов
+    # Одна и та же модель продукта может быть представлена у разных участников торговой сети
+    companies = models.ManyToManyField(Company)
