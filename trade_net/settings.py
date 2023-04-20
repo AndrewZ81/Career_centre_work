@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # Сторонние приложения
     'rest_framework',
     'drf_spectacular',
+    'django_filters',
 
     # Пользовательские приложения
     'companies',
