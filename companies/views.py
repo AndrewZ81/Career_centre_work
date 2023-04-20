@@ -1,9 +1,10 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, filters
 from rest_framework.serializers import Serializer
-# from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 from .serializers import CompanySerializer
+from .models import Company
 
 
 class CompanyCreateView(generics.CreateAPIView):
@@ -14,25 +15,21 @@ class CompanyCreateView(generics.CreateAPIView):
     serializer_class: Serializer = CompanySerializer
 
 
-# class BoardListView(generics.ListAPIView):
-#     """
-#     Обрабатывает запрос на отображение списка общих досок целей текущего пользователя.
-#     Поддерживает сортировку по названию.
-#     """
-#     permission_classes: list = [BoardPermissions]
-#     serializer_class: Serializer = BoardListSerializer
-#
-#     filter_backends: list = [filters.OrderingFilter]
-#     ordering_fields: list = ["title"]
-#     ordering: str = "title"
-#
-#     def get_queryset(self):
-#         """
-#         Исключает удалённые общие доски целей.
-#         """
-#         return Board.objects.filter(participants__user=self.request.user, is_deleted=False)
-#
-#
+class CompanyListView(generics.ListAPIView):
+    """
+    Обрабатывает запрос на отображение списка участников торговой сети.
+    Поддерживает сортировку и поиск по названию, а также фильтрацию по городу.
+    """
+    queryset = Company.objects.all()
+    permission_classes: list = [permissions.IsAuthenticated]
+    serializer_class: Serializer = CompanySerializer
+
+    filter_backends: list = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
+    filterset_fields: list = ["town"]
+    search_fields: list = ["title"]
+    ordering_fields: list = ["title"]
+    ordering: str = "title"
+
 # class BoardView(generics.RetrieveUpdateDestroyAPIView):
 #     """
 #     Для запрашиваемой общей доски целей текущего пользователя:
